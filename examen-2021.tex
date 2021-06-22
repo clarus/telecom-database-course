@@ -1,0 +1,158 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,francais]{babel}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usetikzlibrary{er,positioning}
+
+\title{Examen SD-202 bases de données}
+\date{Mardi 22 Juin 2021, 8h30-11h30}
+
+\begin{document}
+\maketitle
+{\large Documents et Internet autorisés.}
+
+Site du cours: \url{https://clarus.github.io/telecom-database-course/}
+
+\section{Questions générales}{5 points}
+\begin{enumerate}
+  \item Comment est généralement choisi le nombre maximal de fils dans les nœuds d'un arbre B~? Pourquoi choisir une telle valeur~?
+  \item Donner deux intérêts à utiliser un système de gestion de bases de données, plutôt que d'utiliser directement des fichiers pour enregistrer ses données.
+  \item Quel mot clé utiliser pour filtrer les résultats d'une requête agrégée~?
+  \item Pourquoi n'est-il généralement pas possible de modifier les données dans une vue~? Donner un exemple illustrant la difficulté.
+  \item Donner un exemple de différence conceptuelle entre l'algèbre relationnelle ensembliste et le langage SQL.
+\end{enumerate}
+
+\section{Algèbre relationnelle}{1 point}
+\begin{enumerate}
+  \item Exprimer la requête suivante~:\\
+    \begin{tabular}{l}
+      SELECT DISTINCT NumAccident\\
+      FROM Accident, Véhicule\\
+      WHERE\\
+      \quad Accident.NumVéhicule = Véhicule.NumVéhicule AND\\
+      \quad Véhicule.Cylindrée > 6\\
+    \end{tabular}\\
+    en utilisant les opérateur de l'algèbre relationnel suivants~:
+    \begin{itemize}
+      \item sélection~$\sigma$
+      \item projection~$\pi$
+      \item jointure sur une colonne~$\bowtie_c$
+    \end{itemize}
+\end{enumerate}
+
+\section{Relations fonctionnelles}{7 points}
+\begin{enumerate}
+  \item Démontrer la règle de transitivité, en revenant à la définition d'une dépendance fonctionnelle~:\\
+  \emph{Si $A \rightarrow B$ et $B \rightarrow C$ alors $A \rightarrow C$.}
+  \item Comment représenter une liste (non-ordonnée) en première forme normale~? Illustrer en donnant un exemple de clients pouvant avoir plusieurs numéros de téléphone.
+  \item La forme BCNF implique-t-elle les formes 2NF et 3NF~?
+  \item
+    Soit une relation sur les attributs~:
+    \[
+      \begin{array}{l}
+        \mathrm{Adresse}, \mathrm{Cat}, \mathrm{Compte}, \mathrm{Datecom}, \mathrm{Libelle}, \mathrm{Localite}, \mathrm{NCli},\\
+        \mathrm{NCom}, \mathrm{Nom}, \mathrm{NPro}, \mathrm{Prix}, \mathrm{QCom}, \mathrm{QStock}
+      \end{array}
+    \]
+    munie des dépendances fonctionnelles suivantes~:
+    \begin{itemize}
+      \item $\mathrm{NCli} \rightarrow \mathrm{Nom}, \mathrm{Adresse}, \mathrm{Localite}, \mathrm{Cat}, \mathrm{Compte}$
+      \item $\mathrm{NPro} \rightarrow \mathrm{Libelle}, \mathrm{Prix}, \mathrm{QStock}$
+      \item $\mathrm{NCom} \rightarrow \mathrm{NCli}, \mathrm{Datecom}$
+      \item $\mathrm{NCom}, \mathrm{NPro} \rightarrow \mathrm{QCom}$
+    \end{itemize}
+    Décomposer cette relation en forme BCNF.
+  \item Sur les tables issues de la décomposition en forme BCNF de la question précédente, écrire les requêtes SQL permettant d'obtenir~:
+    \begin{itemize}
+      \item la liste des localités pour lesquelles il existe au moins un client,
+      \item les localités des clients qui commandent le produit de numéro "FOOBAR",
+      \item la somme des prix de tous les articles en stock,
+      \item les localités des clients qui ont passé au moins une commande,
+      \item les localités dont aucun client n'a passé de commande.
+    \end{itemize}
+  \item Proposer une couverture minimale~\emph{(minimal cover)} pour l'ensemble de dépendances fonctionnelles suivant~:
+    \[
+      \{D \rightarrow B, BE \rightarrow C, DA \rightarrow D, C \rightarrow F, DE \rightarrow F, FGH \rightarrow C, A \rightarrow B, AD \rightarrow G\}
+    \]
+    On suppose que les attributs sont les lettres $A$, $B$, \dots, $H$.
+\end{enumerate}
+
+\section{Modèle entité-association}{7 points}
+\begin{enumerate}
+  \item
+    Étant donné le schéma relationnel suivant~:
+    \begin{itemize}
+      \item Dossier(\underline{NumDossier}, Titre, DateEnreg, \#NomDirection, \#NomDepart, \#NomService)
+      \item Service(\underline{NomService}, Responsable, \#NomDpart)
+      \item Employe(\underline{NumEmp}, NomEmp, Adresse, \#NomService)
+      \item Departement(\underline{NomDepart}, Localisation, \#NomDirection)
+      \item Direction(\underline{NomDirection}, President, Adresse)
+    \end{itemize}
+    donner un diagramme entité-association correspondant. On suppose que les attributs préfixés par~\# correspondent à des clés étrangères.
+  \item Donner une extension du diagramme telle que la date d'arrivée d'un employé dans un service soit présente.
+  \item Donner un schéma relationnel correspondant au modèle entité-association suivant~:\\\\
+    \begin{tikzpicture}[auto,node distance=1.5cm]
+      \node[entity] (keyword) {
+        \begin{tabular}{l}
+          \textbf{Mot-clé}\\
+          \hline
+          \underline{Valeur}
+        \end{tabular}
+      };
+      \node[relationship] (describe) [right = of keyword] {Décrit};
+      \node[entity] (ouvrage) [right = of describe] {
+        \begin{tabular}{l}
+          \textbf{Ouvrage}\\
+          \hline
+          \underline{NumOuvr}\\
+          Titre\\
+          Auteurs\\
+          Éditeur
+        \end{tabular}
+      };
+      \node[relationship] (de) [below = of ouvrage] {De};
+      \node[entity] (exemplaire) [below = of de] {
+        \begin{tabular}{l}
+          \textbf{Exemplaire}\\
+          \hline
+          \underline{NumEx}\\
+          Position\\
+          DateAchat
+        \end{tabular}
+      };
+      \node[relationship] (emprunte) [right = of exemplaire] {Emprunte};
+      \node[entity] (emprunteur) [above = of emprunte] {
+        \begin{tabular}{l}
+          \textbf{Emprunteur}\\
+          \hline
+          \underline{NumEmpr}\\
+          NomEmpr\\
+          Adresse
+        \end{tabular}
+      };
+      \path (describe)
+        edge node {$0$..$\star$} (keyword)
+        edge node {$0$..$\star$} (ouvrage);
+      \path (de)
+        edge node {$0$..$\star$} (ouvrage)
+        edge node {$1$..$1$} (exemplaire);
+      \path (emprunte)
+        edge node {$0$..$1$} (exemplaire)
+        edge node {$1$..$\star$} (emprunteur);
+    \end{tikzpicture}
+  \item
+    Écrire les requêtes SQL permettant d'obtenir~:
+    \begin{itemize}
+      \item le nombre d'occurences de chaque mot clé,
+      \item les exemplaires correspondant à un mot clé donné,
+      \item les personnes ayant emprunté un ouvrage de chaque éditeur,
+      \item la personne ayant le plus d'exemplaires différents d'un même ouvrage.
+    \end{itemize}
+\end{enumerate}
+
+\end{document}
